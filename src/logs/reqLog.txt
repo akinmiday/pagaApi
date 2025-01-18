@@ -1,0 +1,3 @@
+20250118	18:52:00	62ec4d83-2bc2-41c0-b2e9-156795992e3e	GET	undefined	/
+20250118	18:52:09	2bae0470-fe8f-4c05-afe1-d0e6d6bbb0a4	GET	undefined	/api/banks
+20250118	18:52:11	e377f574-267d-4b68-a0c9-de9a6c9bdc60	GET	undefined	/favicon.ico
