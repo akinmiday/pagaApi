@@ -1,4 +1,4 @@
-# Paga Payment API
+# Paga Bill Payment API
 
 This open-source Node.js project integrates with the Paga APIs to facilitate services such as airtime purchase, data bundles, merchant payments, and more. It incorporates Firebase for user and transaction management, making it a robust and scalable solution for digital payments.
 
@@ -12,6 +12,7 @@ This open-source Node.js project integrates with the Paga APIs to facilitate ser
 - Check transaction statuses.
 - Retrieve merchant services and account details.
 - Secure Firebase integration for user authentication and transaction management.
+- Create and log in users using Firebase Authentication.
 
 ---
 
@@ -35,6 +36,10 @@ Before you begin, ensure the following:
 
 4. **Environment Variables**:
    - Set up API keys, credentials, and Firebase configurations.
+     
+5. **Create User**:  
+   - User must be created in firebase auth with balance before purchase can be made(Create user endpoint in ApiDoc section(10)  of readmi).
+   - For all purchase, accessToken and UserID must be passed.
 
 ---
 
@@ -67,7 +72,7 @@ PAGA_URL=https://secure.paga.com
 PAGA_PRINCIPAL_PUBLIC_KEY=your_principal_public_key
 PAGA_CREDENTIAL=your_credential
 PAGA_API_KEY_HMAC=your_hmac_key
-FIREBASE_SERVICE_ACCOUNT=config/firebase-adminsdk.json
+FIREBASE_API_KEY= firebase_web_api_key
 ```
 
 ### 5. Start the Server
@@ -341,16 +346,87 @@ The server will be available at `http://localhost:3000`.
 
 ---
 
+### 10. Create User
+
+**Endpoint:** /user/create-users  
+**Method:** POST  
+
+**Description:** Create a new user in Firebase Authentication and Firestore.  
+
+**Request Body:**  
+
+json
+{
+  "email": "user@example.com",
+  "password": "securePassword123",
+  "displayName": "John Doe",
+  "initialBalance": 1000
+}
+
+
+- email (required): The user's email address.  
+- password (required): A secure password for the user.  
+- displayName (required): The user's display name.  
+- initialBalance (optional): The user's initial balance (default is 0).  
+
+**Sample Response:**  
+
+json
+{
+  "message": "User created successfully",
+  "user": {
+    "userID": "firebase-user-id",
+    "displayName": "John Doe",
+    "email": "user@example.com",
+    "balance": 1000,
+    "createdAt": "2025-01-01T12:00:00Z"
+  }
+}
+
+
+### 11. Login User
+
+**Endpoint:** /user/auth/login  
+**Method:** POST  
+
+**Description:** Log in a user with their email and password using Firebase Authentication.  
+
+**Request Body:**  
+
+json
+{
+  "email": "user@example.com",
+  "password": "securePassword123"
+}
+
+
+- email (required): The user's email address.  
+- password (required): The user's password.  
+
+**Sample Response:**  
+
+json
+{
+  "message": "Login successful",
+  "userID": "firebase-user-id",
+  "accessToken": "firebase-access-token",
+  "refreshToken": "firebase-refresh-token",
+  "expiresIn": "3600"
+}
+
+
+---
+
 ## Environment Variables
 
-The following variables are required in the `.env` file:
+The following variables are required in the .env file:
 
-- `PAGA_URL`: Paga API base URL.
-- `PAGA_PRINCIPAL_PUBLIC_KEY`: Paga principal public key.
-- `PAGA_CREDENTIAL`: Paga credential.
-- `PAGA_API_KEY_HMAC`: Paga HMAC key.
-- `FIREBASE_SERVICE_ACCOUNT`: Path to Firebase service account JSON file.
-- `PORT`: Port for the server to listen on.
+- PAGA_URL: Paga API base URL.
+- PAGA_PRINCIPAL_PUBLIC_KEY: Paga principal public key.
+- PAGA_CREDENTIAL: Paga credential.
+- PAGA_API_KEY_HMAC: Paga HMAC key.
+- FIREBASE_API_KEY: Firebase web API key for user authentication.
+- PORT: Port for the server to listen on.
 
 ---
 
@@ -365,12 +441,11 @@ The following variables are required in the `.env` file:
 - **failedTransactions**: Tracks failed transactions for debugging.
 
 ### Example Firestore Rules:
-
-```plaintext
+plaintext
 match /{document=**} {
   allow read, write: if request.auth != null;
 }
-```
+
 
 ---
 
@@ -387,13 +462,18 @@ We welcome contributions! To contribute:
 
 1. Fork the repository.
 2. Create a new branch:
-   ```bash
+   
+bash
    git checkout -b feature/your-feature-name
-   ```
+
 3. Commit your changes and push to your fork.
-4. Open a pull request to the `main` branch.
+4. Open a pull request to the main branch.
 
 ---
+
+## Support 
+*If you encounter any challenges implementing this project, feel free to reach out to me on Twitter/X at https://x.com/akinmiday.*
+
 
 ## License
 
